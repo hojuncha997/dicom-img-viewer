@@ -1,3 +1,4 @@
+// webpack.config.js
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -13,6 +14,13 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
+  
+  // WebAssembly 지원 모두 활성화
+  experiments: {
+    asyncWebAssembly: true,
+    syncWebAssembly: true
+  },
+  
   module: {
     rules: [
       {
@@ -31,6 +39,19 @@ module.exports = {
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset/resource'
+      },
+      // WebAssembly 규칙 변경
+      {
+        test: /\.wasm$/,
+        type: 'javascript/auto',
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[hash].[ext]',
+            }
+          }
+        ]
       }
     ]
   },
