@@ -34,6 +34,7 @@
     "@cornerstonejs/core": "^1.86.0",
     "@cornerstonejs/dicom-image-loader": "^1.86.0",
     "@cornerstonejs/tools": "^1.86.0",
+    "dicom-parser": "^1.8.21",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   }
