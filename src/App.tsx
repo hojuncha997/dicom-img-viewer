@@ -106,6 +106,10 @@ const DicomViewer: React.FC = () => {
       // 액터(VTK 객체) 가져오기
       const actor = viewport.getDefaultActor();
       if (actor && actor.actor) {
+        // 플립 전 카메라 정보 저장
+        const camera = viewport.getCamera();
+        const originalParallelScale = camera.parallelScale;
+        
         // 디버깅을 위한 기존 액터 정보 출력
         const position = actor.actor.getPosition ? actor.actor.getPosition() : 'position method not available';
         const origin = actor.actor.getOrigin ? actor.actor.getOrigin() : 'origin method not available';
@@ -143,6 +147,14 @@ const DicomViewer: React.FC = () => {
         // 해결책 2: 위치 조정 시도
         viewport.resetCamera();
         
+        // 원래 크기로 복원
+        if (originalParallelScale) {
+          const newCamera = viewport.getCamera();
+          newCamera.parallelScale = originalParallelScale;
+          viewport.setCamera(newCamera);
+          console.log('카메라 스케일 복원:', originalParallelScale);
+        }
+        
         viewport.render();
         
         // 뒤집기 후 액터 정보 다시 출력
@@ -176,6 +188,10 @@ const DicomViewer: React.FC = () => {
       // 액터(VTK 객체) 가져오기
       const actor = viewport.getDefaultActor();
       if (actor && actor.actor) {
+        // 플립 전 카메라 정보 저장
+        const camera = viewport.getCamera();
+        const originalParallelScale = camera.parallelScale;
+        
         // 디버깅을 위한 기존 액터 정보 출력
         const position = actor.actor.getPosition();
         const origin = actor.actor.getOrigin ? actor.actor.getOrigin() : 'origin method not available';
@@ -214,9 +230,15 @@ const DicomViewer: React.FC = () => {
         actor.actor.setScale(scale);
         
         // 해결책 2: 위치 조정 시도
-        // 뒤집기 후 위치 조정이 필요할 수 있음
-        // viewport.resetCamera()를 호출하면 도움이 될 수 있음
         viewport.resetCamera();
+        
+        // 원래 크기로 복원
+        if (originalParallelScale) {
+          const newCamera = viewport.getCamera();
+          newCamera.parallelScale = originalParallelScale;
+          viewport.setCamera(newCamera);
+          console.log('카메라 스케일 복원:', originalParallelScale);
+        }
         
         viewport.render();
         
