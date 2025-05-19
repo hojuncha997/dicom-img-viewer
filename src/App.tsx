@@ -24,6 +24,14 @@ const DicomViewer: React.FC = () => {
   // 이미지 인덱스 관리
   const [currentPairIndex, setCurrentPairIndex] = useState(0);
   
+  // 각 뷰포트의 반전 상태 관리 추가
+  const [isViewport1Inverted, setIsViewport1Inverted] = useState(false);
+  const [isViewport2Inverted, setIsViewport2Inverted] = useState(false);
+  
+  // 각 뷰포트의 원본 VOI 값 저장
+  const [viewport1OriginalVOI, setViewport1OriginalVOI] = useState<any>(null);
+  const [viewport2OriginalVOI, setViewport2OriginalVOI] = useState<any>(null);
+  
   // 모든 이미지 ID 미리 정의
   const allImageIds = [
     '/dicom/image-000001.dcm',
@@ -305,32 +313,95 @@ const DicomViewer: React.FC = () => {
     const viewport = getSelectedViewport();
     if (!viewport) return;
     
+    // 현재 선택된 뷰포트 확인
+    const isLeftViewport = selectedViewport === 'left';
+    
+    // 현재 반전 상태를 React 상태에서 가져오기
+    const isCurrentlyInverted = isLeftViewport ? isViewport1Inverted : isViewport2Inverted;
+    console.log('현재 반전 상태:', isCurrentlyInverted);
+    
     try {
-      // 액터(VTK 객체) 가져오기
-      const actor = viewport.getDefaultActor();
-      if (actor && actor.actor && actor.actor.getProperty) {
-        const property = actor.actor.getProperty();
+      // 현재 뷰포트 속성 가져오기
+      const viewportProperties = viewport.getProperties() || {};
+      
+      if (!isCurrentlyInverted) {
+        // *** 첫 번째 반전: 원본 값 저장 후 반전 적용 ***
         
-        // 현재 invert 상태 확인 및 토글
-        const currentInvert = property.getInverted ? property.getInverted() : 
-                            (property.getInvertLookupTable ? property.getInvertLookupTable() : false);
+        // 원본 VOI 값 저장 (복원용)
+        const currentVOI = viewportProperties.voiRange || viewportProperties.voi || {};
+        const originalVOI = JSON.parse(JSON.stringify(currentVOI)); // 깊은 복사
         
-        // 상태 반전
-        if (property.setInverted) {
-          property.setInverted(!currentInvert);
-        } else if (property.setInvertLookupTable) {
-          property.setInvertLookupTable(!currentInvert);
+        // 원본 VOI를 상태에 저장
+        if (isLeftViewport) {
+          setViewport1OriginalVOI(originalVOI);
+        } else {
+          setViewport2OriginalVOI(originalVOI);
         }
         
+        console.log('원본 VOI 저장:', originalVOI);
+        
+        // 현재 이미지 데이터 범위 확인
+        try {
+          const actor = viewport.getDefaultActor();
+          if (actor && actor.actor && actor.actor.getMapper()) {
+            const imageData = actor.actor.getMapper().getInputData();
+            const scalars = imageData.getPointData().getScalars();
+            const range = scalars.getRange();
+            console.log('이미지 실제 데이터 범위:', range);
+          }
+        } catch (rangeError) {
+          console.error('이미지 범위 확인 오류:', rangeError);
+        }
+        
+        // 간단한 invert 플래그 설정
+        viewportProperties.invert = true;
+        
+        // 속성 업데이트
+        viewport.setProperties(viewportProperties);
         viewport.render();
-        console.log('이미지 색상을 반전했습니다');
+        
+        // 반전 상태를 React 상태에 저장
+        if (isLeftViewport) {
+          setIsViewport1Inverted(true);
+        } else {
+          setIsViewport2Inverted(true);
+        }
+        
+        console.log('반전 적용 완료');
       } else {
-        // 속성 API가 없는 경우 대체 방법
-        const properties = viewport.getProperties() || {};
-        const currentInvert = properties.invert || false;
-        viewport.setProperties({ invert: !currentInvert });
+        // *** 두 번째 반전: 원래 상태로 복원 ***
+        
+        // 원본 VOI를 상태에서 가져오기
+        const originalVOI = isLeftViewport ? viewport1OriginalVOI : viewport2OriginalVOI;
+        
+        if (originalVOI) {
+          // 원본 VOI 복원 (형식에 따라)
+          if (originalVOI.lower !== undefined) {
+            viewportProperties.voiRange = JSON.parse(JSON.stringify(originalVOI));
+            delete viewportProperties.voi;
+          } else if (originalVOI.windowCenter !== undefined) {
+            viewportProperties.voi = JSON.parse(JSON.stringify(originalVOI));
+            delete viewportProperties.voiRange;
+          }
+          console.log('원래 VOI 값으로 복원:', originalVOI);
+        }
+        
+        // 반전 플래그 복원
+        viewportProperties.invert = false;
+        delete viewportProperties.colormap;
+        
+        // 속성 업데이트
+        viewport.setProperties(viewportProperties);
         viewport.render();
-        console.log('이미지 색상을 반전했습니다');
+        
+        // 반전 상태를 React 상태에서 업데이트
+        if (isLeftViewport) {
+          setIsViewport1Inverted(false);
+        } else {
+          setIsViewport2Inverted(false);
+        }
+        
+        console.log('원래 상태로 복원 완료');
       }
     } catch (error) {
       console.error('Invert 기능 적용 중 오류 발생:', error);
