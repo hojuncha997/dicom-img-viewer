@@ -68,49 +68,410 @@ const DicomViewer: React.FC = () => {
     } else if (selectedViewport === 'right') {
       return viewport2;
     }
+    console.log('선택된 뷰포트가 없습니다. 이미지를 먼저 선택해주세요.');
     return null;
   };
   
   // Zoom 핸들러
   const handleZoom = () => {
     console.log('Zoom 기능 실행');
-    // 기능 구현은 추후 진행
+    const viewport = getSelectedViewport();
+    if (!viewport) return;
+    
+    try {
+      // 카메라 정보 가져오기
+      const camera = viewport.getCamera();
+      
+      // 확대 비율 설정 (기존 parallelScale의 70%로 설정하여 약 1.4배 확대)
+      if (camera && camera.parallelScale) {
+        camera.parallelScale = camera.parallelScale * 0.7;
+        viewport.setCamera(camera);
+        viewport.render();
+        console.log('이미지를 확대했습니다');
+      } else {
+        console.log('확대 기능을 적용할 수 없습니다');
+      }
+    } catch (error) {
+      console.error('줌 기능 적용 중 오류 발생:', error);
+    }
   };
   
   // Flip H 핸들러
   const handleFlipH = () => {
     console.log('Flip H 기능 실행');
-    // 기능 구현은 추후 진행
+    const viewport = getSelectedViewport();
+    if (!viewport) return;
+    
+    try {
+      // 액터(VTK 객체) 가져오기
+      const actor = viewport.getDefaultActor();
+      if (actor && actor.actor) {
+        // 디버깅을 위한 기존 액터 정보 출력
+        const position = actor.actor.getPosition ? actor.actor.getPosition() : 'position method not available';
+        const origin = actor.actor.getOrigin ? actor.actor.getOrigin() : 'origin method not available';
+        const bounds = actor.actor.getBounds ? actor.actor.getBounds() : 'bounds method not available';
+        
+        console.log('액터 정보 - 좌우 뒤집기 전:', {
+          position,
+          origin,
+          bounds,
+          scale: actor.actor.getScale()
+        });
+        
+        // 현재 스케일 가져오기
+        const scale = actor.actor.getScale();
+        
+        // 해결책 1: 원점을 중앙으로 설정 시도
+        if (actor.actor.setOrigin) {
+          console.log('원점을 중앙으로 설정 시도');
+          // 액터의 중심을 계산하려고 시도
+          if (actor.actor.getBounds) {
+            const bounds = actor.actor.getBounds();
+            // 중앙 좌표 계산 (x, y, z)
+            const centerX = (bounds[0] + bounds[1]) / 2;
+            const centerY = (bounds[2] + bounds[3]) / 2;
+            const centerZ = (bounds[4] + bounds[5]) / 2;
+            actor.actor.setOrigin(centerX, centerY, centerZ);
+            console.log('새 원점 설정:', [centerX, centerY, centerZ]);
+          }
+        }
+        
+        // X 축 스케일 반전
+        scale[0] = -scale[0];
+        actor.actor.setScale(scale);
+        
+        // 해결책 2: 위치 조정 시도
+        viewport.resetCamera();
+        
+        viewport.render();
+        
+        // 뒤집기 후 액터 정보 다시 출력
+        const newPosition = actor.actor.getPosition ? actor.actor.getPosition() : 'position method not available';
+        const newOrigin = actor.actor.getOrigin ? actor.actor.getOrigin() : 'origin method not available';
+        const newBounds = actor.actor.getBounds ? actor.actor.getBounds() : 'bounds method not available';
+        
+        console.log('액터 정보 - 좌우 뒤집기 후:', {
+          position: newPosition, 
+          origin: newOrigin,
+          bounds: newBounds,
+          scale: actor.actor.getScale()
+        });
+        
+        console.log('이미지를 좌우 반전했습니다');
+      } else {
+        console.log('좌우 반전 기능을 적용할 수 없습니다');
+      }
+    } catch (error) {
+      console.error('Flip H 기능 적용 중 오류 발생:', error);
+    }
   };
   
   // Flip V 핸들러
   const handleFlipV = () => {
     console.log('Flip V 기능 실행');
-    // 기능 구현은 추후 진행
+    const viewport = getSelectedViewport();
+    if (!viewport) return;
+    
+    try {
+      // 액터(VTK 객체) 가져오기
+      const actor = viewport.getDefaultActor();
+      if (actor && actor.actor) {
+        // 디버깅을 위한 기존 액터 정보 출력
+        const position = actor.actor.getPosition();
+        const origin = actor.actor.getOrigin ? actor.actor.getOrigin() : 'origin method not available';
+        const bounds = actor.actor.getBounds ? actor.actor.getBounds() : 'bounds method not available';
+        
+        console.log('액터 정보 - 뒤집기 전:', {
+          position,
+          origin,
+          bounds,
+          scale: actor.actor.getScale()
+        });
+        
+        // 현재 스케일 가져오기
+        const scale = actor.actor.getScale();
+        
+        // 현재 위치 가져오기 (있다면)
+        const currentPosition = actor.actor.getPosition ? actor.actor.getPosition() : [0, 0, 0];
+        
+        // 해결책 1: 원점을 중앙으로 설정 시도
+        if (actor.actor.setOrigin) {
+          console.log('원점을 중앙으로 설정 시도');
+          // 액터의 중심을 계산하려고 시도
+          if (actor.actor.getBounds) {
+            const bounds = actor.actor.getBounds();
+            // 중앙 좌표 계산 (x, y, z)
+            const centerX = (bounds[0] + bounds[1]) / 2;
+            const centerY = (bounds[2] + bounds[3]) / 2;
+            const centerZ = (bounds[4] + bounds[5]) / 2;
+            actor.actor.setOrigin(centerX, centerY, centerZ);
+            console.log('새 원점 설정:', [centerX, centerY, centerZ]);
+          }
+        }
+        
+        // Y 축 스케일 반전
+        scale[1] = -scale[1];
+        actor.actor.setScale(scale);
+        
+        // 해결책 2: 위치 조정 시도
+        // 뒤집기 후 위치 조정이 필요할 수 있음
+        // viewport.resetCamera()를 호출하면 도움이 될 수 있음
+        viewport.resetCamera();
+        
+        viewport.render();
+        
+        // 뒤집기 후 액터 정보 다시 출력
+        const newPosition = actor.actor.getPosition();
+        const newOrigin = actor.actor.getOrigin ? actor.actor.getOrigin() : 'origin method not available';
+        const newBounds = actor.actor.getBounds ? actor.actor.getBounds() : 'bounds method not available';
+        
+        console.log('액터 정보 - 뒤집기 후:', {
+          position: newPosition,
+          origin: newOrigin,
+          bounds: newBounds,
+          scale: actor.actor.getScale()
+        });
+        
+        console.log('이미지를 상하 반전했습니다');
+      } else {
+        console.log('상하 반전 기능을 적용할 수 없습니다');
+      }
+    } catch (error) {
+      console.error('Flip V 기능 적용 중 오류 발생:', error);
+    }
   };
   
   // Rotate Delta 30 핸들러
   const handleRotate = () => {
     console.log('Rotate Delta 30 기능 실행');
-    // 기능 구현은 추후 진행
+    const viewport = getSelectedViewport();
+    if (!viewport) return;
+    
+    try {
+      // 액터(VTK 객체) 가져오기
+      const actor = viewport.getDefaultActor();
+      if (actor && actor.actor) {
+        // 회전 전 원점을 이미지 중앙으로 설정
+        if (actor.actor.getBounds) {
+          const bounds = actor.actor.getBounds();
+          // 중앙 좌표 계산 (x, y, z)
+          const centerX = (bounds[0] + bounds[1]) / 2;
+          const centerY = (bounds[2] + bounds[3]) / 2;
+          const centerZ = (bounds[4] + bounds[5]) / 2;
+          actor.actor.setOrigin(centerX, centerY, centerZ);
+          console.log('회전: 원점을 중앙으로 설정:', [centerX, centerY, centerZ]);
+        }
+        
+        // 회전 각도 설정 (30도)
+        const rotationAngleDegrees = 30;
+        
+        // Z축을 중심으로 회전
+        actor.actor.rotateZ(rotationAngleDegrees);
+        viewport.render();
+        console.log('이미지를 30도 회전했습니다');
+      } else {
+        console.log('회전 기능을 적용할 수 없습니다');
+      }
+    } catch (error) {
+      console.error('Rotate 기능 적용 중 오류 발생:', error);
+    }
   };
   
   // Invert 핸들러
   const handleInvert = () => {
     console.log('Invert 기능 실행');
-    // 기능 구현은 추후 진행
+    const viewport = getSelectedViewport();
+    if (!viewport) return;
+    
+    try {
+      // 액터(VTK 객체) 가져오기
+      const actor = viewport.getDefaultActor();
+      if (actor && actor.actor && actor.actor.getProperty) {
+        const property = actor.actor.getProperty();
+        
+        // 현재 invert 상태 확인 및 토글
+        const currentInvert = property.getInverted ? property.getInverted() : 
+                            (property.getInvertLookupTable ? property.getInvertLookupTable() : false);
+        
+        // 상태 반전
+        if (property.setInverted) {
+          property.setInverted(!currentInvert);
+        } else if (property.setInvertLookupTable) {
+          property.setInvertLookupTable(!currentInvert);
+        }
+        
+        viewport.render();
+        console.log('이미지 색상을 반전했습니다');
+      } else {
+        // 속성 API가 없는 경우 대체 방법
+        const properties = viewport.getProperties() || {};
+        const currentInvert = properties.invert || false;
+        viewport.setProperties({ invert: !currentInvert });
+        viewport.render();
+        console.log('이미지 색상을 반전했습니다');
+      }
+    } catch (error) {
+      console.error('Invert 기능 적용 중 오류 발생:', error);
+    }
   };
   
   // Apply Colormap 핸들러
   const handleColormap = () => {
     console.log('Apply Colormap 기능 실행');
-    // 기능 구현은 추후 진행
+    const viewport = getSelectedViewport();
+    if (!viewport) return;
+    
+    try {
+      // 액터(VTK 객체) 가져오기
+      const actor = viewport.getDefaultActor();
+      if (actor && actor.actor && actor.actor.getProperty) {
+        const property = actor.actor.getProperty();
+        
+        // 컬러맵 적용 시도 (jet 컬러맵 - 파란색에서 빨간색까지의 그라데이션)
+        let colormapApplied = false;
+        
+        try {
+          // Cornerstone3D의 컬러맵 유틸리티 사용 시도
+          if (cornerstone3D.utilities && cornerstone3D.utilities.colormap) {
+            const preset = cornerstone3D.utilities.colormap.getColormap('jet');
+            if (preset && property.setRGBTransferFunction) {
+              property.setRGBTransferFunction(0, preset);
+              colormapApplied = true;
+            }
+          }
+        } catch (colorMapError) {
+          console.error('컬러맵 적용 중 오류:', colorMapError);
+          
+          // 대체 방법: 룩업 테이블 직접 조작
+          if (property.setUseLookupTable) {
+            property.setUseLookupTable(true);
+            
+            // 간단한 레인보우 컬러맵 적용
+            if (property.getLookupTable) {
+              const lut = property.getLookupTable();
+              lut.setRange(0, 255);
+              lut.setHueRange(0.0, 0.9); // 파란색에서 빨간색까지
+              lut.setSaturationRange(1.0, 1.0);
+              lut.setValueRange(1.0, 1.0);
+              lut.setAlphaRange(1.0, 1.0);
+              lut.build();
+              colormapApplied = true;
+            }
+          }
+        }
+        
+        viewport.render();
+        
+        if (colormapApplied) {
+          console.log('컬러맵을 적용했습니다');
+        } else {
+          // 대체 방법 시도
+          viewport.setProperties({ colormap: 'jet' });
+          viewport.render();
+          console.log('컬러맵을 적용했습니다 (대체 방법)');
+        }
+      } else {
+        // 속성 API가 없는 경우 대체 방법
+        viewport.setProperties({ colormap: 'jet' });
+        viewport.render();
+        console.log('컬러맵을 적용했습니다 (대체 방법)');
+      }
+    } catch (error) {
+      console.error('Colormap 기능 적용 중 오류 발생:', error);
+    }
   };
   
   // Reset 핸들러
   const handleReset = () => {
     console.log('Reset 기능 실행');
-    // 기능 구현은 추후 진행
+    const viewport = getSelectedViewport();
+    if (!viewport) return;
+    
+    try {
+      // 현재 이미지 ID 가져오기
+      const imageIds = viewport.getImageIds();
+      const currentImageIdIndex = viewport.getCurrentImageIdIndex();
+      const currentImageId = imageIds[currentImageIdIndex];
+      
+      // 액터 가져오기
+      const actor = viewport.getDefaultActor();
+      
+      if (actor && actor.actor) {
+        // 모든 변환 초기화
+        actor.actor.setScale([1, 1, 1]);
+        actor.actor.setOrientation(0, 0, 0);
+        
+        // 중요: 원점을 이미지 중앙으로 설정
+        if (actor.actor.getBounds) {
+          const bounds = actor.actor.getBounds();
+          // 중앙 좌표 계산 (x, y, z)
+          const centerX = (bounds[0] + bounds[1]) / 2;
+          const centerY = (bounds[2] + bounds[3]) / 2;
+          const centerZ = (bounds[4] + bounds[5]) / 2;
+          actor.actor.setOrigin(centerX, centerY, centerZ);
+          console.log('리셋: 원점을 중앙으로 설정:', [centerX, centerY, centerZ]);
+        } else {
+          actor.actor.setOrigin(0, 0, 0);
+        }
+        
+        actor.actor.setPosition(0, 0, 0);
+        
+        // 액터의 속성 초기화
+        if (actor.actor.getProperty) {
+          const property = actor.actor.getProperty();
+          
+          // 색상 반전 초기화
+          if (property.setInverted) {
+            property.setInverted(false);
+          } else if (property.setInvertLookupTable) {
+            property.setInvertLookupTable(false);
+          }
+          
+          // 컬러맵 초기화
+          if (property.setRGBTransferFunction) {
+            property.setRGBTransferFunction(0, null);
+          }
+          
+          // 룩업 테이블 초기화
+          if (property.setUseLookupTable) {
+            property.setUseLookupTable(false);
+          }
+          
+          // 기타 가능한 속성들 초기화
+          if (property.setColorWindow) {
+            property.setColorWindow(255);
+          }
+          
+          if (property.setColorLevel) {
+            property.setColorLevel(127);
+          }
+        }
+      }
+      
+      // 뷰포트 속성 초기화
+      viewport.setProperties({
+        invert: false,
+        colormap: undefined,
+        interpolationType: undefined,
+        rotation: 0
+      });
+      
+      // 카메라 완전 초기화
+      viewport.resetCamera();
+      
+      // 이미지 다시 로드하기 (가장 확실한 방법)
+      if (currentImageId) {
+        viewport.setStack([currentImageId]).then(() => {
+          viewport.render();
+          console.log('이미지를 완전히 원래 상태로 되돌렸습니다');
+        });
+      } else {
+        viewport.render();
+        console.log('이미지를 원래 상태로 되돌렸습니다');
+      }
+    } catch (error) {
+      console.error('Reset 기능 적용 중 오류 발생:', error);
+    }
   };
   
   // Cornerstone3D 초기화 및 뷰포트 설정
