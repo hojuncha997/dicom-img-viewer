@@ -53,22 +53,31 @@ const ViewportContainer: React.FC<ViewportContainerProps> = ({
   // 현재 뷰포트가 선택되었는지 확인
   const isSelected = selectedViewport === viewportId;
   
-  // 테두리 스타일 결정
-  const borderStyle = isSelected 
-    ? 'border-2 border-blue-500' 
-    : 'border border-gray-400';
+  // 선택 시 파란색 테두리를 위한 스타일
+  const selectionStyle = isSelected 
+    ? { border: '1px solid #0F62FE' } 
+    : { border: 'none' };
+  
+  // 피그마 스펙에 맞는 너비 설정
+  const viewportWidth = viewportId === 'left' ? '720px' : '715px';
   
   return (
     <div className="flex flex-col items-center">
       <div
-        ref={viewportRef}
-        className={`${borderStyle} rounded bg-black cursor-pointer`}
-        style={{ width: '720px', height: '720px' }}
+        className="rounded cursor-pointer bg-white"
+        style={{ 
+          width: viewportWidth, 
+          height: '903px',
+          padding: '3px',
+          ...selectionStyle
+        }}
         onClick={handleClick}
-      ></div>
-      <p className="mt-2 text-sm text-gray-600">
-        {imageName}
-      </p>
+      >
+        <div
+          ref={viewportRef}
+          className="w-full h-full bg-black rounded"
+        ></div>
+      </div>
     </div>
   );
 };
