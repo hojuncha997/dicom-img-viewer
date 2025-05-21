@@ -94,7 +94,7 @@ function Navigation({
             <div className="flex items-center space-x-2">
               <button
                 onClick={onPrevImage}
-                className="text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
                 style={{ 
                   width: '174px', 
                   height: '48px', 
@@ -112,7 +112,7 @@ function Navigation({
               </button>
               <button
                 onClick={onNextImage}
-                className="text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
                 style={{ 
                   width: '143px', 
                   height: '48px', 
