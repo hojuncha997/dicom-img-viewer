@@ -64,7 +64,7 @@ const ViewportContainer: React.FC<ViewportContainerProps> = ({
   return (
     <div className="flex flex-col items-center">
       <div
-        className="rounded cursor-pointer bg-white"
+        className="cursor-pointer bg-white"
         style={{ 
           width: viewportWidth, 
           height: '903px',
