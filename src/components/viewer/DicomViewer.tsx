@@ -1,10 +1,12 @@
 import React from 'react';
 import Container from '../layout/Container';
 import ViewportContainer from './ViewportContainer';
-import ViewerControls from './ViewerControls';
+import Navigation from '../layout/Navigation';
 import { useCornerstone } from '../../hooks/useCornerstone';
 import { useViewport } from '../../hooks/useViewport';
 import { useViewerImages } from '../../store/viewerStore';
+import { useSelectedViewportManipulation } from '../../store/imageManipulationStore';
+import { useViewerStore } from '../../store/viewerStore';
 
 const DicomViewer: React.FC = () => {
   // Cornerstone3D 초기화
@@ -15,6 +17,21 @@ const DicomViewer: React.FC = () => {
   
   // 현재 이미지 이름 가져오기
   const { leftImageName, rightImageName } = useViewerImages();
+  
+  // 이미지 네비게이션 함수 가져오기
+  const { goToPreviousPair, goToNextPair } = useViewerStore();
+  
+  // 이미지 조작 함수 가져오기
+  const {
+    handleZoom,
+    handleFlipH,
+    handleFlipV,
+    handleRotate,
+    handleInvert,
+    handleColormap,
+    handleReset,
+    isViewportSelected
+  } = useSelectedViewportManipulation();
   
   // 로딩 또는 오류 상태 표시
   if (isLoading) {
@@ -43,16 +60,23 @@ const DicomViewer: React.FC = () => {
   
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 컨트롤 영역 */}
-      <div className="bg-gray-100 p-4 border-b border-gray-300">
-        <Container maxWidth="1440px">
-          <ViewerControls />
-        </Container>
-      </div>
+      {/* 네비게이션 바 */}
+      <Navigation
+        onPrevImage={goToPreviousPair}
+        onNextImage={goToNextPair}
+        onZoom={handleZoom}
+        onFlipH={handleFlipH}
+        onFlipV={handleFlipV}
+        onRotate={handleRotate}
+        onInvert={handleInvert}
+        onColormap={handleColormap}
+        onReset={handleReset}
+        disableControls={!isViewportSelected}
+      />
       
       {/* 뷰포트 영역 */}
-      <Container maxWidth="1440px">
-        <div className="flex justify-center items-start pt-4">
+      <Container maxWidth="1440px" className="overflow-hidden">
+        <div className="flex justify-center items-start">
           {/* 왼쪽 뷰포트 */}
           <ViewportContainer 
             viewportId="left" 
@@ -60,7 +84,7 @@ const DicomViewer: React.FC = () => {
           />
           
           {/* 세로 구분선 */}
-          <div style={{ width: '5px', height: '720px', backgroundColor: '#0F62FE', margin: '0 10px' }}></div>
+          <div style={{ width: '5px', height: '903px', backgroundColor: '#0F62FE', margin: '0' }}></div>
           
           {/* 오른쪽 뷰포트 */}
           <ViewportContainer 
