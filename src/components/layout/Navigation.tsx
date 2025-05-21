@@ -29,7 +29,7 @@ function Navigation({
   return (
     <nav className="bg-white shadow-md" style={{ height: '116px', display: 'flex', alignItems: 'center', borderBottom: '5px solid #0F62FE' }}>
       <Container maxWidth="1440px">
-        <div className="flex items-center h-full" style={{ padding: '0px 40px 0px 30px', justifyContent: 'space-between' }}>
+        <div className="flex items-center h-full" style={{ padding: '16px 40px 16px 30px', justifyContent: 'space-between', gap: '48px' }}>
           {/* 타이틀 영역 */}
           <div style={{ display: 'flex', gap: '4px' }}>
             <span style={{ 
@@ -45,62 +45,167 @@ function Navigation({
           </div>
           
           {/* 버튼 영역 통합 컨테이너 */}
-          <div style={{ width: '1014px', height: '48px', gap: '24px', display: 'flex', alignItems: 'center' }}>
+          <div style={{ width: '1014px', height: '48px', gap: '24px', display: 'flex', alignItems: 'center', boxSizing: 'content-box' }}>
             {/* 중앙 기능 이미지 조작 버튼 영역 */}
             <div className="flex items-center flex-grow justify-center" style={{ width: '649px', height: '40px', gap: '16px', color: '#21272A' }}>
               <button 
-                className="px-3 py-1 text-sm font-medium text-gray-700 rounded-md"
+                className="rounded-md"
                 onClick={onZoom}
                 disabled={disableControls}
+                style={{
+                  padding: '12px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
-                Zoom
+                <span style={{
+                  fontFamily: 'Roboto',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#21272A'
+                }}>
+                  Zoom
+                </span>
               </button>
               <button 
-                className="px-3 py-1 text-sm font-medium text-gray-700 rounded-md"
+                className="rounded-md"
                 onClick={onFlipH}
                 disabled={disableControls}
+                style={{
+                  padding: '12px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
-                Flip H
+                <span style={{
+                  fontFamily: 'Roboto',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#21272A'
+                }}>
+                  Flip H
+                </span>
               </button>
               <button 
-                className="px-3 py-1 text-sm font-medium text-gray-700 rounded-md"
+                className="rounded-md"
                 onClick={onFlipV}
                 disabled={disableControls}
+                style={{
+                  padding: '12px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
-                Flip V
+                <span style={{
+                  fontFamily: 'Roboto',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#21272A'
+                }}>
+                  Flip V
+                </span>
               </button>
               <button 
-                className="px-3 py-1 text-sm font-medium text-gray-700 rounded-md"
+                className="rounded-md"
                 onClick={onRotate}
                 disabled={disableControls}
+                style={{
+                  padding: '12px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
-                Rotate Delta 30
+                <span style={{
+                  fontFamily: 'Roboto',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#21272A'
+                }}>
+                  Rotate Delta 30
+                </span>
               </button>
               <button 
-                className="px-3 py-1 text-sm font-medium text-gray-700 rounded-md"
+                className="rounded-md"
                 onClick={onInvert}
                 disabled={disableControls}
+                style={{
+                  padding: '12px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
-                Invert
+                <span style={{
+                  fontFamily: 'Roboto',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#21272A'
+                }}>
+                  Invert
+                </span>
               </button>
               <button 
-                className="px-3 py-1 text-sm font-medium text-gray-700 rounded-md"
+                className="rounded-md"
                 onClick={onColormap}
                 disabled={disableControls}
+                style={{
+                  padding: '12px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
-                Apply Colormap
+                <span style={{
+                  fontFamily: 'Roboto',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#21272A'
+                }}>
+                  Apply Colormap
+                </span>
               </button>
               <button 
-                className="px-3 py-1 text-sm font-medium text-gray-700 rounded-md"
+                className="rounded-md"
                 onClick={onReset}
                 disabled={disableControls}
+                style={{
+                  padding: '12px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
-                Reset
+                <span style={{
+                  fontFamily: 'Roboto',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#21272A'
+                }}>
+                  Reset
+                </span>
               </button>
             </div>
             
             {/* 오른쪽 이미지 이동 버튼 영역 */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center" style={{ gap: '16px' }}>
               <button
                 onClick={onPrevImage}
                 className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
