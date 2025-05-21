@@ -10,7 +10,7 @@ if (!container) throw new Error('루트 요소를 찾을 수 없습니다.');
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
-    <Container className="mx-auto bg-red-300 h-screen" maxWidth="1440px">
+    <Container className="mx-auto" maxWidth="1440px" maxHeight="1024px">
       <App />
     </Container>
   </React.StrictMode>
