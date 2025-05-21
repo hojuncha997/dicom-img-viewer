@@ -19,7 +19,7 @@ const DicomViewer: React.FC = () => {
   const { leftImageName, rightImageName } = useViewerImages();
   
   // 이미지 네비게이션 함수 가져오기
-  const { goToPreviousPair, goToNextPair } = useViewerStore();
+  const { goToPreviousImage, goToNextImage } = useViewerStore();
   
   // 이미지 조작 함수 가져오기
   const {
@@ -62,8 +62,8 @@ const DicomViewer: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       {/* 네비게이션 바 */}
       <Navigation
-        onPrevImage={goToPreviousPair}
-        onNextImage={goToNextPair}
+        onPrevImage={goToPreviousImage}
+        onNextImage={goToNextImage}
         onZoom={handleZoom}
         onFlipH={handleFlipH}
         onFlipV={handleFlipV}
