@@ -4,24 +4,30 @@ interface ContainerProps {
   children: React.ReactNode;
   className?: string;
   maxWidth?: string;
+  maxHeight?: string;
+  style?: React.CSSProperties;
 }
 
 function Container({ 
   children, 
   className = '', 
-  maxWidth = '100%'
+  maxWidth = '100%',
+  maxHeight,
+  style = {}
 }: ContainerProps) {
   // 기본 클래스에서 max-width 제거하여 prop으로 분리
   const baseClasses = 'container mx-auto';
   
-  // max-width를 style로 적용
-  const style = {
-    maxWidth: maxWidth, // max-width 속성을 스타일로 적용
+  // style 속성들을 합침
+  const combinedStyle = {
+    maxWidth,
+    maxHeight,
+    ...style
   };
   
   const combinedClasses = className ? `${baseClasses} ${className}` : baseClasses;
   
-  return <div className={combinedClasses} style={style}>{children}</div>;
+  return <div className={combinedClasses} style={combinedStyle}>{children}</div>;
 }
 
 export default Container;
